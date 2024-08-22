@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+   url      = "postgresql://postgres:12345@localhost:5432/test6?schema=public" 
+}
+
+model posts {
+  id Int  @id @default(autoincrement())
+  image String
+  title String
+  description String
+  time String
+  categories post_categories[]
+  comment comments[]
+  userr users  @relation(fields: [userrid], references: [id])
+  userrid Int
+}
+
+model categories{
+   id Int  @id @default(autoincrement())
+   name String
+   posts post_categories[]
+
+}
+ 
+
+model comments {
+  id Int  @id @default(autoincrement())
+  year String
+  information String
+  user users   @relation(fields: [userid], references: [id])
+  userid Int
+  post posts  @relation(fields: [postid], references: [id])
+  postid Int
+
+} 
+
+model users {
+  id Int  @id @default(autoincrement())
+  name String
+  avata String
+  mail String
+  job String
+  description String
+  post posts[]
+  comment comments[]
+  role role @relation(fields: [roleid], references: [id])
+  roleid Int
+  pass String?
+  
+}
+
+model profile {
+  id Int  @id @default(autoincrement())
+  image String
+  title String
+  description String
+  content String
+  mail String
+  phone Int
+  address String
+}
+
+model vision {
+  id Int  @id @default(autoincrement())
+  icon String
+  title String
+  description String
+
+
+}
+
+model role {
+  id Int  @id @default(autoincrement())
+  possion String
+  user users[]
+
+}
+
+model social {
+  id Int  @id @default(autoincrement())
+  name String
+  image String
+  link String
+
+}
+
+model contact {
+  id Int  @id @default(autoincrement())
+  name String
+  mail String
+  subject String
+  message String 
+}
+
+model post_categories {
+  post posts @relation(fields: [postid], references: [id])
+  postid Int
+  categorie categories @relation(fields: [categorieid], references: [id])
+  categorieid Int
+
+    @@id([postid, categorieid])
+}
+
+model dangnhap {
+  id Int  @id @default(autoincrement())
+  user String
+  pass String
+}
+
+
+model dangki {
+  id Int  @id @default(autoincrement())
+  user String
+  image String
+  mail String
+  pass String 
+
+}

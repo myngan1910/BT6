@@ -1,0 +1,116 @@
+<%- include('./layout/head'); -%>
+<body>
+	<%- include('./layout/header'); -%>
+    <div class="container-fluid">
+        <main class="tm-main">
+            <!-- Search form -->
+            <div class="row tm-row">
+                <div class="col-12">
+                    <form method="GET" class="form-inline tm-mb-80 tm-search-form">                
+                        <input class="form-control tm-search-input" name="query" type="text" placeholder="Search..." aria-label="Search">
+                        <button class="tm-search-button" type="submit">
+                            <i class="fas fa-search tm-search-icon" aria-hidden="true"></i>
+                        </button>                                
+                    </form>
+                </div>                
+            </div>            
+            <div class="row tm-row">
+                <div class="col-12">
+                    <hr class="tm-hr-primary tm-mb-55">
+                    <!-- Video player 1422x800 -->
+                    <video width="954" height="535" controls class="tm-mb-40">
+                        <source src="video/wheat-field.mp4" type="video/mp4">							  
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <div class="row tm-row">
+                <div class="col-lg-8 tm-post-col">
+                    <div class="tm-post-full">      
+                      
+                        <div class="mb-4">
+                            
+                            <h2 class="pt-2 tm-color-primary tm-post-title"><%= data[0].title %></h2>
+                            <p class="tm-mb-40"><%= data[0].time %> posted by <%= data[0].user %></p>
+                            <p>
+                                <%= data[0].description %>
+                            </p>
+                            <span class="d-block text-right tm-color-primary"><%= data[0].job %></span>
+                        </div>
+                         
+                      
+                        <!-- Comments -->
+                        <div>
+                            <h2 class="tm-color-primary tm-post-title">Comments</h2>
+                            <hr class="tm-hr-primary tm-mb-45">
+                            <% for (var i =0 ; i < comment.length; i++) {%>
+
+                            <div class="tm-comment tm-mb-45">
+                                <figure class="tm-comment-figure">
+                                    <img src="../<%= comment[i].avata %>" alt="Image" class="mb-2 rounded-circle img-thumbnail" style="width: 130px; height: 130px;">
+                                    <figcaption class="tm-color-primary text-center"><%= comment[i].name %></figcaption>
+                                </figure>
+                                <div>
+                                    <p>
+                                        <%= comment[i].information %>
+                                    </p>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="#" class="tm-color-primary">REPLY</a>
+                                        <span class="tm-color-primary">June 14, 2020</span>
+                                    </div>                                                 
+                                </div> 
+                                                      
+                            </div>
+                            <% }%>  
+                            
+                            <form action="/comment/<%= data[0].id %>" class="mb-5 tm-comment-form" method="post">
+                                <h2 class="tm-color-primary tm-post-title mb-4">Your comment</h2>
+                               
+                                <div class="mb-3">
+                                    <textarea class="form-control" name="message" rows="6"></textarea>
+                                </div>
+                                <div class="text-right">
+                                    <button class="tm-btn tm-btn-primary tm-btn-small">Submit</button>                        
+                                </div>                                
+                            </form>                          
+                        </div>
+                    </div>
+                </div>
+                <aside class="col-lg-4 tm-aside-col">
+                    <div class="tm-post-sidebar">
+                        <hr class="mb-3 tm-hr-primary">
+                        <h2 class="mb-4 tm-post-title tm-color-primary">Categories</h2>
+                        <ul class="tm-mb-75 pl-5 tm-category-list">
+                            <% for (var i =0 ; i < ca.length; i++) {%>
+                            <li><a href="#" class="tm-color-primary"><%= ca[i].name %></a></li>
+                           
+                            <% }%>
+                        </ul>
+                        <hr class="mb-3 tm-hr-primary">
+                        <h2 class="tm-mb-40 tm-post-title tm-color-primary">Related Posts</h2>
+                        <% for (var i =2 ; i < dt.length; i++) {%>
+                        <a href="#" class="d-block tm-mb-40">
+                            <figure>
+                                <img src="../<%= dt[i].image %>" alt="Image" class="mb-3 img-fluid">
+                                <figcaption class="tm-color-primary"><%= dt[i].title %></figcaption>
+                            </figure>
+                        </a>
+                        <% }%>
+
+                      
+                    </div>                    
+                </aside>
+            </div>
+            <footer class="row tm-row">
+                <div class="col-md-6 col-12 tm-color-gray">
+                    Design: <a rel="nofollow" target="_parent" href="https://templatemo.com" class="tm-external-link">TemplateMo</a>
+                </div>
+                <div class="col-md-6 col-12 tm-color-gray tm-copyright">
+                    Copyright 2020 Xtra Blog Company Co. Ltd.
+                </div>
+            </footer>
+        </main>
+    </div>
+    <%- include('./layout/footer'); -%>
+</body>
+</html>
