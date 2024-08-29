@@ -4,7 +4,14 @@ const client = new PrismaClient();
 
 module.exports = {
     postLogin: async(name) =>{
-        const pass = await client.$queryRaw`SELECT id, name, pass FROM "users" WHERE name = ${name}  `
+        const pass = await client.users.findMany({
+            where: {name: name},
+            select: {
+                id: true,
+                name: true,
+                pass: true
+            }
+        })
         return pass;
 
     }
