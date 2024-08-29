@@ -1,24 +1,64 @@
 const {PrismaClient, Prisma} = require('@prisma/client');
+const { name } = require('ejs');
 const client = new PrismaClient();
 
 module.exports = {
     getPort: async() => {
-        const data = await client.$queryRaw`SELECT "posts".id, "posts".image, "posts".title, "posts".description, "posts".time,"posts".userrid, "users".name as user, "users".job as job FROM "posts"
-        JOIN "users" ON "posts".userrid = "users".id
-        ` 
+        const data = await client.posts.findMany({
+            select: {
+                id: true,
+                image: true,
+                title: true,
+                description: true,
+                time: true,
+                userrid: true,
+                userr: {
+                    select: {
+                    name: true,
+                    job: true
+                }}
+            }
+        })
        return data;
    },
    singlePort: async(genId) => {
-    const data = await client.$queryRaw`SELECT "posts".id, "posts".image, "posts".title, "posts".description, "posts".time, "users".name as user, "users".job as job FROM "posts"
-    JOIN "users" ON "posts".userrid = "users".id
-    WHERE "posts".id = ${genId}` 
+    const data = await client.posts.findUnique({
+        where: {id:genId},
+        select: {
+            id: true,
+            image: true,
+            title: true,
+            description: true,
+            time: true,
+            userr: {
+                select: {
+                    name: true,
+                    job: true
+                }
+            }
+        }
+    })
   
    return data;
 },
 postLogin: async(id) => {
-    const data = await client.$queryRaw`SELECT "role".id, "role".possion, "users".* FROM users 
-    JOIN "role" ON "users".roleid  = "role".id
-    WHERE  users.id = ${id}`
+    const data = await client.users.findMany({
+        where: {id: id},
+        select : {
+            id:  true,
+            name: true,
+            avata: true,
+            job: true,
+            description: true,
+            pass: true,
+            role: {
+                select: {
+                    id: true,
+                    possion: true
+                }
+            }
+        }
+    })
     return data;
 },
  
@@ -39,29 +79,23 @@ postLogin: async(id) => {
         return data;
    },
    delePort: async(genId) => {
-    const dele1 = await client.$queryRaw`
-        DELETE FROM post_categories
-        WHERE post_categories.postid IN (
-            SELECT posts.id FROM posts
-            JOIN post_categories ON posts.id = post_categories.postid
-            WHERE posts.id = ${genId}
-        )
-        `;
+    const dele1 = await client.post_categories.deleteMany({
+        where: {
+            postid : genId
+        }
+    });
        
-      const data1 = await client.$queryRaw`DELETE FROM comments
-      WHERE id IN (SELECT comments.id FROM comments
-     JOIN posts ON posts.id = comments.postid
-     WHERE posts.id = ${genId})`;
-       const data = await client.$queryRaw`DELETE FROM "posts" WHERE id=${genId}`
+      const data1 = await client.comments.deleteMany({where: {postid: genId}});
+       const data = await client.posts.deleteMany({where: {id: genId}})
        return {dele1,data1,data};
 
    },
-   viewPort: async(genId,title,img,des,time,userrid) => {
+   viewPort: async(genId,title,image,des,time,userrid) => {
     const update = await client.posts.update({
         where: {id:genId},
         data: {
             title: title,
-            image: img,
+            image: image,
             description: des,
             time: time,
             userrid: userrid
@@ -89,14 +123,14 @@ detailCate: async(genId) => {
     return data;
 },
 deleCate: async(genId) => {
-   const data = await client.$queryRaw`DELETE FROM  post_categories   WHERE post_categories.postid IN (
-    SELECT posts.id FROM posts
-    JOIN post_categories ON posts.id = post_categories.postid
-    JOIN categories ON post_categories.categorieid = categories.id
-    WHERE categories.id = ${genId}
-    )`
+   const data = await client.post_categories.deleteMany({
 
-    const data1 = await client.$queryRaw`DELETE FROM categories WHERE id=${genId}`
+    where: {
+           categorieid: genId
+    }
+   })
+
+    const data1 = await client.categories.deleteMany({where: {id: genId}})
    return data,data1;
 
 },
@@ -113,22 +147,53 @@ deleCate: async(genId) => {
 
 //COMMENT
     getCom: async(genId) => {
-        const data = await client.$queryRaw`SELECT "users".avata, "users".name, "comments".* FROM comments
-        JOIN "users" ON "comments".userid = "users".id
-        JOIN "posts" ON "comments".postid = "posts".id
-        WHERE "comments".postid = ${genId}`  
+        const data = await client.comments.findMany({
+            where: {postid : genId},
+            select: {
+                id: true,
+                year: true,
+                information: true,
+                userid: true,
+                postid: true,
+                user: {
+                    select: {
+                        avata: true,
+                        name: true
+                    }
+                }
+
+            }
+        })
     return data;
 },
 
 getComment: async() => {
-    const data = await client.$queryRaw`SELECT "users".avata, "users".name, "comments".* FROM comments
-    JOIN "users" ON "comments".userid = "users".id
-    
-    `  
+    const data = await client.comments.findMany({
+        select: {
+            id: true,
+            year: true,
+            information: true,
+            userid: true,
+            postid: true,
+            user: {
+                select: {
+                    avata: true,
+                    name: true
+                }
+            }
+        }
+    })
 return data;
 },
     postCom: async(year,info,user,post) => {
-    const create =  await client.$queryRaw`INSERT INTO comments (year,information, userid, postid) VALUES ( ${year},${info},${parseInt(user)},${parseInt(post)})`;
+    const create =  await client.comments.create({
+        data: {
+            year: year,
+            information: info,
+            userid: parseInt(user),
+            postid: parseInt(post)
+        }
+    })
     return create;
 },
  detailCom: async(genId) => {
@@ -160,10 +225,27 @@ deleCom: async(genId) => {
    return data;
 },
 getUserrole: async() => {
-    const data = await client.$queryRaw`SELECT "role".possion, "users".* FROM users
-    JOIN "role" ON "users".roleid = "role".id
-    WHERE "role".possion IN ('Blogger')`  
-   return data;
+    const data = await client.users.findMany({
+        where: {
+            role: {
+               possion: 'Blogger'
+        }},
+        select: {
+           
+           id:  true,
+           name: true,
+           avata: true,
+           job: true,
+           description: true,
+           pass: true,
+           roleid: true,
+           role: {
+            select: {
+                possion: true
+            }
+           }
+        }
+    })
 },
 
 createUser : async(name,avata,mail,job,pass,des,rolee) => {
@@ -187,14 +269,12 @@ detailUser: async(genId) => {
     return data;
 },
 deleUser: async(genId) => {
-   const data = await client.$queryRaw`DELETE FROM posts
-   WHERE id IN (SELECT posts.id FROM posts
-  JOIN users ON users.id = posts.userrid
-  WHERE users.id = ${genId})`;
-  const dele1 = await client.$queryRaw`DELETE FROM comments
-  WHERE id IN (SELECT comments.id FROM comments
- JOIN users ON users.id = comments.userid
- WHERE users.id = ${genId});`
+   const data = await client.posts.deleteMany({
+    where: {
+        userrid : genId
+    }
+   })
+  const dele1 = await client.comments.deleteMany({where: {userid:genId}})
 
 
  const dele2 = await client.users.deleteMany({where: {id:genId}})
@@ -221,77 +301,119 @@ viewUser: async(genId,name,avata,mail,job,pass,rolee,des) => {
 
 //profile
 getPro: async() => {
-    const data = await client.$queryRaw`SELECT * FROM profile` 
+    const data = await client.profile.findMany();
    return data;
 },
 postPro : async(title,image,des,cont,mail,phone,add) => {
-const create = await client.$queryRaw`INSERT INTO profile (title,image,description,content,mail,phone,address) VALUES ( ${title},${image},${des},${cont},${mail},${phone},${add})`;
+const create = await client.profile.create({
+    data: {
+        title: title,
+        image: image,
+        description: des,
+        content: cont,
+        mail: mail,
+        phone: phone,
+        address: add
+    }
+})
 return create;
 },
 detailPro: async(genId) => {
-   const data = await client.$queryRaw`SELECT * FROM "profile" WHERE id=${genId}`
+   const data = await client.profile.findUnique({where: {id:genId}})
     return data;
 },
 delePro: async(genId) => {
-   const data = await client.$queryRaw`DELETE FROM profile WHERE id=${genId}`
+   const data = await client.profile.deleteMany({where: {id:genId}})
    return data;
 
 },
 viewPro: async(genId,title,image,des,cont,mail,phone,add) => {
-const update = await client.$queryRaw`UPDATE "profile" SET title=${title}, image=${image},description=${des},content=${cont},mail=${mail},phone=${phone}, address=${add} WHERE id = ${genId} `
+const update = await client.profile.update({
+    where: {id: genId},
+    data: {
+        title: title,
+        image: image,
+        description: des,
+        content: cont,
+        mail: mail,
+        phone: phone,
+        address: add
+    }
+})
 return update;
 
 },
 
 //VISION
 getVi: async() => {
-    const data = await client.$queryRaw`SELECT * FROM vision` 
+    const data = await client.vision.findMany() 
    return data;
 },
-postVi : async(image,title,des) => {
-const create = await client.$queryRaw`INSERT INTO vision (icon,title,description) VALUES ( ${image},${title},${des})`;
+postVi : async(img,title,des) => {
+const create = await client.vision.create({
+    data: {
+        icon: img,
+        title: title,
+        description: des
+    }
+})
 return create;
 },
 detailVi: async(genId) => {
-   const data = await client.$queryRaw`SELECT * FROM "vision" WHERE id=${genId}`
+   const data = await client.vision.findUnique({where: {id:genId}})
     return data;
 },
 deleVi: async(genId) => {
-   const data = await client.$queryRaw`DELETE FROM vision WHERE id=${genId}`
+   const data = await client.vision.deleteMany({where: {id:genId}})
    return data;
 
 },
-viewVi: async(genId,image,title,des) => {
-const update = await client.$queryRaw`UPDATE "vision" SET  icon=${image},title=${title},description=${des} WHERE id = ${genId} `
+viewVi: async(genId,img,title,des) => {
+const update = await client.vision.update({
+    where: {id:genId},
+    data: {
+        icon: img,
+        title: title,
+        description: des
+    }
+})
 return update;
 
 },
 
 //ROLE
 getRole: async() => {
-    const data = await client.$queryRaw`SELECT * FROM role`
+    const data = await client.role.findMany()
    return data;
 },
 postRole : async(possion) => {
-const create =await client.$queryRaw`INSERT INTO role (possion) VALUES ( ${possion})`;
+const create =await client.role.create({
+    data: {
+        possion: possion
+    }
+})
 return create;
 },
 detailRole: async(genId) => {
-   const data = await client.$queryRaw`SELECT * FROM "role" WHERE id=${genId}`
+   const data = await client.role.findUnique({where: {id:genId}})
     return data;
 },
 deleRole: async(genId) => {
     
-   const data = await client.$queryRaw`DELETE FROM users
-   WHERE id IN (SELECT users.id FROM users
-  JOIN role ON role.id = users.roleid
-  WHERE role.id = ${genId})`;
-  const dele1 = await client.$queryRaw`DELETE FROM role WHERE id=${genId}`
+   const data = await client.users.deleteMany({
+    where: {roleid: genId},
+   })
+  const dele1 = await client.role.deleteMany({where: {id:genId}})
    return {data,dele1};
 
 },
 viewRole: async(genId,possion) => {
-const update = await client.$queryRaw`UPDATE "role" SET possion=${possion} WHERE id = ${genId} `
+const update = await client.role.update({
+    where: {id:genId},
+    data: {
+        possion: possion
+    }
+})
 return update;
 
 },
@@ -299,48 +421,76 @@ return update;
  //CONTACT
 
  getCtc: async() => {
-    const data = await client.$queryRaw`SELECT * FROM contact`  
+    const data = await client.contact.findMany()
     return data;
 },
 postCtc : async(name,mail,subject,mess) => {
-    const createctc = await client.$queryRaw`INSERT INTO contact (name,mail,subject,message) VALUES ( ${name},${mail},${subject},${mess})`;
+    const createctc = await client.contact.create({
+        data: {
+            name: name,
+            mail: mail,
+            subject: subject,
+            message: mess
+        }
+    })
     return createctc;
 },
 detailCtc: async(genId) => {
- const data = await client.$queryRaw`SELECT * FROM "contact" WHERE id=${genId}`
+ const data = await client.contact.findUnique({where: {id:genId}})
  return data;
  },
  deleCtc: async(genId) => {
-     const data = await client.$queryRaw`DELETE FROM contact WHERE id=${genId}`
+     const data = await client.contact.deleteMany({where: {id:genId}})
      return data;
 
  },
  viewCtc: async(genId,name,mail,subject,mess) => {
-    const updateskill = await client.$queryRaw`UPDATE "contact" SET name=${name}, mail=${mail},subject=${subject},message=${mess} WHERE id = ${genId} `
+    const updateskill = await client.contact.update({
+        where: {id:genId},
+        data: {
+            name: name,
+            mail: mail,
+            subject: subject,
+            message: mess
+        }
+    })
     return updateskill;
 
  },
  //SOCIAL
 
  getSocial: async() => {
-    const data = await client.$queryRaw`SELECT * FROM social` 
+    const data = await client.social.findMany()
     return data;
 },
 postSocial : async(name,image,link) => {
-    const create = await client.$queryRaw`INSERT INTO social (name,image,link) VALUES ( ${name},${image},${link})`;
+    const create = await client.social.create({
+        data: {
+            name: name,
+            image: image,
+            link: link
+        }
+    })
     return create;
 },
 detailSocial: async(genId) => {
-    const data = await client.$queryRaw`SELECT * FROM "social" WHERE id=${genId}`
+    const data = await client.social.findUnique({where: {id:genId}})
     return data;
     },
     deleSocial: async(genId) => {
-        const data = await client.$queryRaw`DELETE FROM social WHERE id=${genId}`
+        const data = await client.social.deleteMany({where: {id:genId}})
         return data;
 
     },
     viewSocial: async(genId,name,image,link) => {
-       const updateskill = await client.$queryRaw`UPDATE "social" SET name=${name}, image=${image},link=${link} WHERE id = ${genId} `
+       const updateskill = await client.social.update({
+        where: {id: genId},
+        data: {
+            name: name,
+            image: image,
+            link: link
+        }
+       })
        return updateskill;
 
     },
@@ -348,7 +498,7 @@ detailSocial: async(genId) => {
         var img = null;
         if(image == undefined){
             if(data.length != 0){
-               img = data[0].image || data[0].avata;
+               img = data.image || data.avata;
 
             }else {
                img = "assets/uploads/icon-04.png" 

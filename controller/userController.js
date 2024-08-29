@@ -18,7 +18,7 @@ module.exports = {
         const port1= await userModel.getPort();
         const comment = await userModel.getCom(genId);
         const social = await userModel.getSocial();
-
+      
 
         res.render('post',{k1:'', k2:'active', k3:'', k4:'', ca:ca,data:port, dt:port1,comment:comment,social:social})
 

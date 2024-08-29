@@ -89,6 +89,6 @@ router.get('/social', viewController.getSocial)
 router.get('/create-so',  viewController.createSocial)
 router.post('/createsocial',upload.single('image'), viewController.postSocial);
 router.get('/so/:ID',viewController.detailSocial);
-router.get('/socialdele/:ID',viewController.deleSocial);
+router.get('/sodele/:ID',viewController.deleSocial);
 router.post('/ss/:ID',upload.single('image'), viewController.viewSocial);
   module.exports = router; 

@@ -79,7 +79,7 @@ module.exports = {
        
         const genId = parseInt(req.params.ID);
         const data=  await ViewModel.detailCate(genId)
-        return res.render("./categories/cateDetail", {cateDetail: data[0]})
+        return res.render("./categories/cateDetail", {cateDetail: data})
     },
     deleCate: async(req,res) => {
         const genId = parseInt(req.params.ID);
@@ -120,7 +120,7 @@ module.exports = {
        
         const genId = parseInt(req.params.ID);
         const data=  await ViewModel.detailCom(genId)
-        return res.render("./comments/comeDetail", {comeDetail: data[0]})
+        return res.render("./comments/comeDetail", {comeDetail: data})
     },
     deleCom: async(req,res) => {
         const genId = parseInt(req.params.ID);
@@ -171,7 +171,7 @@ module.exports = {
         const genId = parseInt(req.params.ID);
         const data=  await ViewModel.detailUser(genId)
         const dt= await ViewModel.getRole();
-        return res.render("./user/userDetail", {userDetail: data[0],datauserr:dt})
+        return res.render("./user/userDetail", {userDetail: data,datauserr:dt})
     },
     deleUser: async(req,res) => {
         const genId = parseInt(req.params.ID);
@@ -227,7 +227,7 @@ module.exports = {
        
         const genId = parseInt(req.params.ID);
         const detailPro=  await ViewModel.detailPro(genId)
-        return res.render("./profile/proDetail", {proDetail: detailPro[0]})
+        return res.render("./profile/proDetail", {proDetail: detailPro})
        
     },
     delePro: async(req,res) => {
@@ -275,7 +275,7 @@ module.exports = {
        
         const genId = parseInt(req.params.ID);
         const data=  await ViewModel.detailVi(genId)
-        return res.render("./vision/visionDetail", {visionDetail: data[0]})
+        return res.render("./vision/visionDetail", {visionDetail: data})
        
     },
     deleVi: async(req,res) => {
@@ -317,7 +317,7 @@ module.exports = {
        
         const genId = parseInt(req.params.ID);
         const data=  await ViewModel.detailRole(genId)
-        return res.render("./role/roleDetail", {roleDetail: data[0]})
+        return res.render("./role/roleDetail", {roleDetail: data})
        
     },
     deleRole: async(req,res) => {
@@ -357,7 +357,7 @@ postCtc:  async(req,res) => {
 detailCtc: async(req,res) => {
     const genId = parseInt(req.params.ID);
     const detailCtc =  await ViewModel.detailCtc(genId)
-    return res.render("./contact/ctcDetail", {ctcDetail: detailCtc[0]})
+    return res.render("./contact/ctcDetail", {ctcDetail: detailCtc})
 },
 deleCtc: async(req,res) => {
     const genId = parseInt(req.params.ID);
@@ -395,7 +395,7 @@ postSocial:  async(req,res) => {
 detailSocial: async(req,res) => {
     const genId = parseInt(req.params.ID);
     const data =  await ViewModel.detailSocial(genId)
-    return res.render("./social/socialDetail", {socialDetail: data[0]})
+    return res.render("./social/socialDetail", {socialDetail: data})
 },
 deleSocial: async(req,res) => {
     const genId = parseInt(req.params.ID);
