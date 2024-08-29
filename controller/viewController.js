@@ -39,7 +39,7 @@ module.exports = {
         const genId = parseInt(req.params.ID);
         const data = await ViewModel.getUser();
         const detailPro=  await ViewModel.detailPort(genId)
-        return res.render("./post/postDetail", {postDetail: detailPro[0],datauserr:data})
+        return res.render("./post/postDetail", {postDetail: detailPro,datauserr:data})
     },
     delePort: async(req,res) => {
         const genId = parseInt(req.params.ID);

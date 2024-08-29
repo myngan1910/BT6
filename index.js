@@ -13,10 +13,7 @@ const userRouter = require('./router/userRouter.js')
 const requireLogin = require('./middleware/checkout.js')
 const client = new PrismaClient();
 
-// const { userInfo } = require('os')
-// const { name } = require('ejs')
-// const session = require('express-session');
-// const cookieParser = require('cookie-parser');
+
 const port = 3000
 
 const storage = multer.diskStorage({
