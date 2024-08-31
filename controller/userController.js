@@ -4,11 +4,12 @@ const userModel = require('../model/viewModel.js')
 
 
 module.exports = {
-    getUserr: async(req,res) => {
-        const port = await userModel.getPort();
+    getPage: async(req,res) => {
+        const id = parseInt(req.params.ID)||1;
         const role = await userModel.getRole();
         const social = await userModel.getSocial();
-        res.render('index',{k1:'active', k2:'', k3:'', k4:'',port:port, role:role,social:social})
+        const page = await userModel.getPage((id-1)*4);
+        res.render('index',{k1:'active', k2:'', k3:'', k4:'',port:page, role:role,social:social})
 
     },
     getPostt: async(req,res) => {
@@ -23,6 +24,7 @@ module.exports = {
         res.render('post',{k1:'', k2:'active', k3:'', k4:'', ca:ca,data:port, dt:port1,comment:comment,social:social})
 
     },
+   
 
     postCom: async(req,res) => {
         const year = 'today';

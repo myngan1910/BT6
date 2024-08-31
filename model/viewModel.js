@@ -4,23 +4,43 @@ const client = new PrismaClient();
 
 module.exports = {
     getPort: async() => {
-        const data = await client.posts.findMany({
+        const data = await client.users.findMany({
+            
             select: {
-                id: true,
-                image: true,
-                title: true,
-                description: true,
-                time: true,
-                userrid: true,
-                userr: {
+                name: true,
+               
+                post: {  
                     select: {
-                    name: true,
-                    job: true
-                }}
+                        id: true,
+                        title: true,
+                        description: true,
+                        time: true
+                    }
+                }
             }
-        })
+        });
        return data;
    },
+   getPage: async(page) => {
+    const data = await client.posts.findMany({
+        skip: page,
+        take: 4,
+        select: {
+            id: true,
+            image: true,
+            title: true,
+            description: true,
+            time: true,
+            userrid: true,
+            userr: {
+                select: {
+                name: true,
+                job: true
+            }}
+        }
+    })
+   return data;
+},
    singlePort: async(genId) => {
     const data = await client.posts.findUnique({
         where: {id:genId},
@@ -224,6 +244,7 @@ deleCom: async(genId) => {
     const data = await client.users.findMany(); 
    return data;
 },
+
 getUserrole: async() => {
     const data = await client.users.findMany({
         where: {

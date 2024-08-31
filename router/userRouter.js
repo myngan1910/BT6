@@ -21,8 +21,9 @@ const upload = multer({ storage: storage })
 
   
 
-  router.get('/', userController.getUserr);
+  router.get('/', userController.getPage);
   router.get('/post/:ID', userController.getPostt);
+  router.get('/page/:ID',userController.getPage)
   router.post('/comment/:ID',requireLogin.requireLogin, requireComment.requireComment, userController.postCom)
   
   router.get('/about', userController.getAbout);
