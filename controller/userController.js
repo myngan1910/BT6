@@ -9,7 +9,7 @@ module.exports = {
         const role = await userModel.getRole();
         const social = await userModel.getSocial();
         const page = await userModel.getPage((id-1)*4);
-        res.render('index',{k1:'active', k2:'', k3:'', k4:'',port:page, role:role,social:social})
+        res.render('index',{k1:'active', k2:'', k3:'', k4:'',port:page, role:role,social:social,currentPage: id })
 
     },
     getPostt: async(req,res) => {

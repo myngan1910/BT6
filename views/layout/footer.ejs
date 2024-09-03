@@ -1,2 +1,26 @@
 <script src="js/jquery.min.js"></script>
 <script src="js/templatemo-script.js"></script>
+
+<script>
+    var currentPage = parseInt("<%= currentPage %>") || 1;
+    var totalPages = 2; 
+    prevBtn.onclick = function() {
+        if (currentPage > 1) {
+            window.location.href = `/page/${currentPage - 1}`;
+        }
+    };
+    nextBtn.onclick = function() {
+        if (currentPage < totalPages) {
+            window.location.href = `/page/${currentPage + 1}`;
+        }
+    };
+    if (currentPage <= 1) {
+        prevBtn.classList.add('disabled');
+       
+    }
+    if (currentPage >= totalPages) {
+        nextBtn.classList.add('disabled');
+       
+    }
+
+</script>

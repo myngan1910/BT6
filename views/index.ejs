@@ -49,21 +49,22 @@
             </div>
             <div class="row tm-row tm-mt-100 tm-mb-75">
                 <div class="tm-prev-next-wrapper">
-                    <a href="#" class="mb-2 tm-btn tm-btn-primary tm-prev-next disabled tm-mr-20">Prev</a>
-                    <a href="/page/:ID" class="mb-2 tm-btn tm-btn-primary tm-prev-next">Next</a>
+                    <a id=" prevBtn" href="<%= currentPage > 1 ? '/page/' + (currentPage - 1) : '#' %>" class="mb-2 tm-btn tm-btn-primary tm-prev-next <% if (currentPage <= 1) { %>disabled<% } %> tm-mr-20">Prev</a>
+                     <a id="nextBtn" href="<%= currentPage < 2 ? '/page/' + (currentPage + 1) : '#' %>" class="mb-2 tm-btn tm-btn-primary tm-prev-next <% if (currentPage >= 2) { %>disabled<% } %>">Next</a>
                 </div>
+        
                 <div class="tm-paging-wrapper">
                     <span class="d-inline-block mr-3" >Page</span>
                     <nav class="tm-paging-nav d-inline-block" >
                         
                         <ul>
-                            <li class="tm-paging-item "   >
-                                <a href="/page/1" class="mb-2 tm-btn tm-paging-link">1</a>
-                            </li>
-                            <li class="tm-paging-item">
-                                <a href="/page/2" class="mb-2 tm-btn tm-paging-link">2</a>
-                            </li>
-                           
+                            <% for (var i = 1;  i <= 2; i++) { %>
+                                <li class="tm-paging-item">
+                                    <a href="/page/<%= i %>" class="mb-2 tm-btn tm-paging-link <%  { %>active<% } %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                            <% } %>
                         </ul>
                     </nav>
                 </div>                

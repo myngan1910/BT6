@@ -4,23 +4,24 @@ const client = new PrismaClient();
 
 module.exports = {
     getPort: async() => {
-        const data = await client.users.findMany({
-            
+        const data = await client.posts.findMany({
+           
             select: {
-                name: true,
-               
-                post: {  
+                id: true,
+                image: true,
+                title: true,
+                description: true,
+                time: true,
+                userrid: true,
+                userr: {
                     select: {
-                        id: true,
-                        title: true,
-                        description: true,
-                        time: true
-                    }
-                }
+                    name: true,
+                    job: true
+                }}
             }
-        });
+        })
        return data;
-   },
+    },
    getPage: async(page) => {
     const data = await client.posts.findMany({
         skip: page,
